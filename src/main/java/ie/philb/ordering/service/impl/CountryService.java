@@ -11,22 +11,33 @@ import ie.philb.ordering.dao.NoSuchEntityDaoException;
 import ie.philb.ordering.model.Country;
 import ie.philb.ordering.service.ICountryService;
 import ie.philb.ordering.service.ServiceException;
+import static java.rmi.server.LogStream.log;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.jws.WebService;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 @Stateless
 @WebService
 public class CountryService implements ICountryService {
 
-    @Resource(name = "jdbc/ordering")
-    private DataSource ds;
+    private static final Logger logger = Logger.getLogger(CountryService.class.getSimpleName());
+    private final CountryDao countryDao;
 
-    private final CountryDao countryDao = new CountryDao(ds);
+    public CountryService() throws NamingException {
+        logger.info("Getting initial context");
+        InitialContext cxt = new InitialContext();
+
+        logger.info("Getting datasource");
+        DataSource ds = (DataSource) cxt.lookup("jdbc/ordering");
+
+        logger.info("Creating dao");
+        countryDao = new CountryDao(ds);
+    }
 
     @Override
     public List<Country> list() throws ServiceException {

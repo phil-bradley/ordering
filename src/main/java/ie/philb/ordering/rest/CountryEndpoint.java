@@ -19,17 +19,18 @@ import ie.philb.ordering.model.Country;
 import ie.philb.ordering.service.ServiceException;
 import ie.philb.ordering.service.impl.CountryService;
 import java.util.ArrayList;
-import javax.ejb.EJB;
+import javax.naming.NamingException;
 
-/**
- *
- */
+
 @Stateless
-@Path("/countries")
+@Path("countries")
 public class CountryEndpoint {
 
-    @EJB
     CountryService countryService;
+
+    public CountryEndpoint() throws NamingException {
+        countryService = new CountryService();
+    }
 
     @POST
     @Consumes({"application/xml", "application/json"})
